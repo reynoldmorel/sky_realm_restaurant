@@ -1,4 +1,6 @@
 defmodule SkyRealmRestaurant.Entities.User do
+  @derive Jason.Encoder
+
   alias SkyRealmRestaurant.Entities.BaseAttrs
 
   @attrs BaseAttrs.get_attrs() ++

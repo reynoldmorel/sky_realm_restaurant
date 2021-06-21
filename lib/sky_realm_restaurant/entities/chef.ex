@@ -1,4 +1,6 @@
 defmodule SkyRealmRestaurant.Entities.Chef do
+  @derive Jason.Encoder
+
   alias SkyRealmRestaurant.Entities.Employee
   alias SkyRealmRestaurant.Constants.EmployeeType
 

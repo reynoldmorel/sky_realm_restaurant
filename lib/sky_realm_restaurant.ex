@@ -20,6 +20,6 @@ defmodule SkyRealmRestaurant do
 
   def print_me do
     user = %Chef{name: "Reynold"}
-    IO.inspect(user)
+    IO.inspect(Jason.encode!(user))
   end
 end
