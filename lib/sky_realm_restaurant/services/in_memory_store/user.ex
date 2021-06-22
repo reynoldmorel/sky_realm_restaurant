@@ -12,7 +12,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserService do
   def find_by_id(id),
     do: {:ok, Enum.find(read_users_file(), fn %User{id: userId} -> userId == id end)}
 
-  def find_by_all(), do: {:ok, read_users_file()}
+  def find_all(), do: {:ok, read_users_file()}
 
   def create(new_user = %User{}) do
     {:ok, current_users} = read_users_file()

@@ -4,7 +4,7 @@ defmodule SkyRealmRestaurant.Controllers.UserController do
 
   def find_by_id(id), do: UserService.find_by_id(id)
 
-  def find_by_all(), do: UserService.find_by_all()
+  def find_all(), do: UserService.find_all()
 
   def create(new_user = %User{}), do: UserService.create(new_user)
 
