@@ -8,7 +8,9 @@ defmodule SkyRealmRestaurant.Entities.Tax do
              id: nil,
              name: nil,
              tax_value: nil,
-             tax_percentage: nil
+             tax_percentage: nil,
+             is_order: nil,
+             is_product: nil
            ]
 
   defstruct @attrs
