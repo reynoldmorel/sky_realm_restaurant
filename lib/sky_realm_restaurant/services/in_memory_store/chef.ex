@@ -47,7 +47,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
         last_name: Map.get(updated_chef, :last_name, existing_chef.last_name),
         age: Map.get(updated_chef, :age, existing_chef.age),
         employee_code: Map.get(updated_chef, :employee_code, existing_chef.employee_code),
-        experience_level: Map.get(updated_chef, :experience_level, existing_chef.experience_level),
+        experience_level:
+          Map.get(updated_chef, :experience_level, existing_chef.experience_level),
         username: Map.get(updated_chef, :username, existing_chef.username),
         password: Map.get(updated_chef, :password, existing_chef.password),
         updated_at: current_date_unix
