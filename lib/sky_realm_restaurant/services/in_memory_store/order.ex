@@ -10,7 +10,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderService do
     do: FileUtils.write_entities_to_file(@orders_file, content)
 
   def find_by_id(id),
-    do: {:ok, Enum.find(read_orders_file(), fn %Order{id: orderId} -> orderId == id end)}
+    do: {:ok, Enum.find(read_orders_file(), fn %Order{id: order_id} -> order_id == id end)}
 
   def find_all(), do: {:ok, read_orders_file()}
 
@@ -38,7 +38,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderService do
   def update(id, updated_order = %Order{}) do
     {:ok, current_orders} = read_orders_file()
 
-    existing_order = Enum.find(current_orders, fn %Order{id: orderId} -> orderId == id end)
+    existing_order = Enum.find(current_orders, fn %Order{id: order_id} -> order_id == id end)
 
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 

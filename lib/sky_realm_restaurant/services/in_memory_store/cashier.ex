@@ -10,7 +10,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
     do: FileUtils.write_entities_to_file(@cashiers_file, content)
 
   def find_by_id(id),
-    do: {:ok, Enum.find(read_cashiers_file(), fn %Cashier{id: cashierId} -> cashierId == id end)}
+    do:
+      {:ok, Enum.find(read_cashiers_file(), fn %Cashier{id: cashier_id} -> cashier_id == id end)}
 
   def find_all(), do: {:ok, read_cashiers_file()}
 
@@ -39,7 +40,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
     {:ok, current_cashiers} = read_cashiers_file()
 
     existing_cashier =
-      Enum.find(current_cashiers, fn %Cashier{id: cashierId} -> cashierId == id end)
+      Enum.find(current_cashiers, fn %Cashier{id: cashier_id} -> cashier_id == id end)
 
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 

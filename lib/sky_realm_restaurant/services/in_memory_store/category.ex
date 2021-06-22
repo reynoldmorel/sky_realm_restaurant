@@ -12,7 +12,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CategoryService do
   def find_by_id(id),
     do:
       {:ok,
-       Enum.find(read_categories_file(), fn %Category{id: categoryId} -> categoryId == id end)}
+       Enum.find(read_categories_file(), fn %Category{id: category_id} -> category_id == id end)}
 
   def find_all(), do: {:ok, read_categories_file()}
 
@@ -41,7 +41,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CategoryService do
     {:ok, current_categories} = read_categories_file()
 
     existing_category =
-      Enum.find(current_categories, fn %Category{id: categoryId} -> categoryId == id end)
+      Enum.find(current_categories, fn %Category{id: category_id} -> category_id == id end)
 
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 

@@ -13,8 +13,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
   def find_by_id(id),
     do:
       {:ok,
-       Enum.find(read_final_products_file(), fn %FinalProduct{id: final_productId} ->
-         final_productId == id
+       Enum.find(read_final_products_file(), fn %FinalProduct{id: final_product_id} ->
+         final_product_id == id
        end)}
 
   def find_all(), do: {:ok, read_final_products_file()}
@@ -44,8 +44,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
     {:ok, current_final_products} = read_final_products_file()
 
     existing_final_product =
-      Enum.find(current_final_products, fn %FinalProduct{id: final_productId} ->
-        final_productId == id
+      Enum.find(current_final_products, fn %FinalProduct{id: final_product_id} ->
+        final_product_id == id
       end)
 
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

@@ -13,8 +13,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
   def find_by_id(id),
     do:
       {:ok,
-       Enum.find(read_order_details_file(), fn %OrderDetail{id: order_detailId} ->
-         order_detailId == id
+       Enum.find(read_order_details_file(), fn %OrderDetail{id: order_detail_id} ->
+         order_detail_id == id
        end)}
 
   def find_all(), do: {:ok, read_order_details_file()}
@@ -44,8 +44,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
     {:ok, current_order_details} = read_order_details_file()
 
     existing_order_detail =
-      Enum.find(current_order_details, fn %OrderDetail{id: order_detailId} ->
-        order_detailId == id
+      Enum.find(current_order_details, fn %OrderDetail{id: order_detail_id} ->
+        order_detail_id == id
       end)
 
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
