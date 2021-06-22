@@ -23,3 +23,10 @@ be found at [https://hexdocs.pm/sky_realm_restaurant](https://hexdocs.pm/sky_rea
 
 Run: `iex -S mix compile`
 
+## Normal git process:
+
+1. `git checkout -b feature/[ENTITY_NAME]-service-controller`
+2. `git add .`
+3. `git commit -m "Added [ENTITY_NAME] service and controller"`
+4. `git push --set-upstream origin feature/[ENTITY_NAME]-service-controller`
+
