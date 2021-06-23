@@ -37,7 +37,10 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
 
   def update(id, updated_cashier = %Cashier{}) do
     {:ok, current_cashiers} = read_cashiers_file()
-    existing_cashier = Enum.find(current_cashiers, fn %Cashier{id: cashierId} -> cashierId == id end)
+
+    existing_cashier =
+      Enum.find(current_cashiers, fn %Cashier{id: cashierId} -> cashierId == id end)
+
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 
     updated_cashier = %Cashier{
