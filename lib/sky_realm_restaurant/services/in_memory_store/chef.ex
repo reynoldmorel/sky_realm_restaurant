@@ -10,7 +10,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
     do: FileUtils.write_entities_to_file(@chefs_file, content)
 
   def find_by_id(id),
-    do: {:ok, Enum.find(read_chefs_file(), fn %Chef{id: chefId} -> chefId == id end)}
+    do: {:ok, Enum.find(read_chefs_file(), fn %Chef{id: chef_id} -> chef_id == id end)}
 
   def find_all(), do: {:ok, read_chefs_file()}
 
@@ -37,7 +37,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
 
   def update(id, updated_chef = %Chef{}) do
     {:ok, current_chefs} = read_chefs_file()
-    existing_chef = Enum.find(current_chefs, fn %Chef{id: chefId} -> chefId == id end)
+    existing_chef = Enum.find(current_chefs, fn %Chef{id: chef_id} -> chef_id == id end)
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 
     updated_chef = %Chef{

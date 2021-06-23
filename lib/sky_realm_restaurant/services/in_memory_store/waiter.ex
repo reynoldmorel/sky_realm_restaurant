@@ -10,7 +10,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.WaiterService do
     do: FileUtils.write_entities_to_file(@waiters_file, content)
 
   def find_by_id(id),
-    do: {:ok, Enum.find(read_waiters_file(), fn %Waiter{id: waiterId} -> waiterId == id end)}
+    do: {:ok, Enum.find(read_waiters_file(), fn %Waiter{id: waiter_id} -> waiter_id == id end)}
 
   def find_all(), do: {:ok, read_waiters_file()}
 
@@ -37,7 +37,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.WaiterService do
 
   def update(id, updated_waiter = %Waiter{}) do
     {:ok, current_waiters} = read_waiters_file()
-    existing_waiter = Enum.find(current_waiters, fn %Waiter{id: waiterId} -> waiterId == id end)
+    existing_waiter = Enum.find(current_waiters, fn %Waiter{id: waiter_id} -> waiter_id == id end)
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 
     updated_waiter = %Waiter{

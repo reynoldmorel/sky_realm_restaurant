@@ -10,7 +10,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ClientService do
     do: FileUtils.write_entities_to_file(@clients_file, content)
 
   def find_by_id(id),
-    do: {:ok, Enum.find(read_clients_file(), fn %Client{id: clientId} -> clientId == id end)}
+    do: {:ok, Enum.find(read_clients_file(), fn %Client{id: client_id} -> client_id == id end)}
 
   def find_all(), do: {:ok, read_clients_file()}
 
@@ -37,7 +37,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ClientService do
 
   def update(id, updated_client = %Client{}) do
     {:ok, current_clients} = read_clients_file()
-    existing_client = Enum.find(current_clients, fn %Client{id: clientId} -> clientId == id end)
+    existing_client = Enum.find(current_clients, fn %Client{id: client_id} -> client_id == id end)
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
 
     updated_client = %Client{
