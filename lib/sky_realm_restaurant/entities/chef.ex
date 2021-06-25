@@ -7,7 +7,8 @@ defmodule SkyRealmRestaurant.Entities.Chef do
   @attrs Employee.get_attrs_excluding(employee_type: nil) ++
            [
              employee_type: EmployeeType.chef(),
-             experience_level: nil
+             experience_level: nil,
+             working_status: nil
            ]
 
   defstruct @attrs
