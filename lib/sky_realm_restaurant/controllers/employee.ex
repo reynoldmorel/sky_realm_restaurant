@@ -10,6 +10,8 @@ defmodule SkyRealmRestaurant.Controllers.EmployeeController do
 
   def find_all_enabled(), do: EmployeeService.find_all_enabled()
 
+  def find_by_username_enabled(id), do: EmployeeService.find_by_username_enabled(id)
+
   def create(new_employee = %Employee{}), do: EmployeeService.create(new_employee)
 
   def update(id, updated_employee = %Employee{}), do: EmployeeService.update(id, updated_employee)

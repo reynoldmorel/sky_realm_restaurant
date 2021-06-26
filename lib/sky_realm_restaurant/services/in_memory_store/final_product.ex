@@ -12,36 +12,43 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
   defp write_final_products_file_content(content),
     do: FileUtils.write_entities_to_file(@final_products_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_final_products_file(), fn %FinalProduct{id: final_product_id} ->
-         final_product_id == id
-       end)}
+  def find_by_id(id) do
+    {:ok, current_final_products} = read_final_products_file()
 
-  def find_all(), do: {:ok, read_final_products_file()}
+    {:ok,
+     current_final_products
+     |> Enum.find(fn %FinalProduct{id: final_product_id} -> final_product_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_final_products_file()
-       |> Enum.find(fn %FinalProduct{id: final_product_id, status: status} ->
-         final_product_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_final_products_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_final_products_file()
-       |> Enum.filter(fn %FinalProduct{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_final_products} = read_final_products_file()
 
-  def find_by_serial_enabled(serial),
-    do:
-      {:ok,
-       read_final_products_file()
-       |> Enum.find(fn %FinalProduct{serial: final_product_serial, status: status} ->
-         final_product_serial == serial and status == Status.enable()
-       end)}
+    {:ok,
+     current_final_products
+     |> Enum.find(fn %FinalProduct{id: final_product_id, status: status} ->
+       final_product_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_final_products} = read_final_products_file()
+
+    {:ok,
+     current_final_products
+     |> Enum.filter(fn %FinalProduct{status: status} -> status == Status.enable() end)}
+  end
+
+  def find_by_serial_enabled(serial) do
+    {:ok, current_final_products} = read_final_products_file()
+
+    {:ok,
+     current_final_products
+     |> Enum.find(fn %FinalProduct{serial: final_product_serial, status: status} ->
+       final_product_serial == serial and status == Status.enable()
+     end)}
+  end
 
   def create(new_final_product = %FinalProduct{}) do
     {:ok, current_final_products} = read_final_products_file()

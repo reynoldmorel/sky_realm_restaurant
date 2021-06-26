@@ -10,6 +10,8 @@ defmodule SkyRealmRestaurant.Controllers.ClientController do
 
   def find_all_enabled(), do: ClientService.find_all_enabled()
 
+  def find_by_username_enabled(id), do: ClientService.find_by_username_enabled(id)
+
   def create(new_client = %Client{}), do: ClientService.create(new_client)
 
   def update(id, updated_client = %Client{}), do: ClientService.update(id, updated_client)

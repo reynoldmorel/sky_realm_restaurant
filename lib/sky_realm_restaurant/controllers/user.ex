@@ -10,6 +10,8 @@ defmodule SkyRealmRestaurant.Controllers.UserController do
 
   def find_all_enabled(), do: UserService.find_all_enabled()
 
+  def find_by_username_enabled(id), do: UserService.find_by_username_enabled(id)
+
   def create(new_user = %User{}), do: UserService.create(new_user)
 
   def update(id, updated_user = %User{}), do: UserService.update(id, updated_user)

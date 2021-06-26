@@ -11,26 +11,31 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CategoryService do
   defp write_categories_file_content(content),
     do: FileUtils.write_entities_to_file(@categories_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_categories_file(), fn %Category{id: category_id} -> category_id == id end)}
+  def find_by_id(id) do
+    {:ok, current_categories} = read_categories_file()
 
-  def find_all(), do: {:ok, read_categories_file()}
+    {:ok, current_categories |> Enum.find(fn %Category{id: category_id} -> category_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_categories_file()
-       |> Enum.find(fn %Category{id: cateogry_id, status: status} ->
-         cateogry_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_categories_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_categories_file()
-       |> Enum.filter(fn %Category{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_categories} = read_categories_file()
+
+    {:ok,
+     current_categories
+     |> Enum.find(fn %Category{id: category_id, status: status} ->
+       category_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_categories} = read_categories_file()
+
+    {:ok,
+     current_categories
+     |> Enum.filter(fn %Category{status: status} -> status == Status.enable() end)}
+  end
 
   def create(new_category = %Category{}) do
     {:ok, current_categories} = read_categories_file()

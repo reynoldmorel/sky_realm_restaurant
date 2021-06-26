@@ -11,24 +11,41 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.WaiterService do
   defp write_waiters_file_content(content),
     do: FileUtils.write_entities_to_file(@waiters_file, content)
 
-  def find_by_id(id),
-    do: {:ok, Enum.find(read_waiters_file(), fn %Waiter{id: waiter_id} -> waiter_id == id end)}
+  def find_by_id(id) do
+    {:ok, current_waiters} = read_waiters_file()
 
-  def find_all(), do: {:ok, read_waiters_file()}
+    {:ok, current_waiters |> Enum.find(fn %Waiter{id: waiter_id} -> waiter_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_waiters_file()
-       |> Enum.find(fn %Waiter{id: waiter_id, status: status} ->
-         waiter_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_waiters_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_waiters_file()
-       |> Enum.filter(fn %Waiter{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_waiters} = read_waiters_file()
+
+    {:ok,
+     current_waiters
+     |> Enum.find(fn %Waiter{id: waiter_id, status: status} ->
+       waiter_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_waiters} = read_waiters_file()
+
+    {:ok,
+     current_waiters
+     |> Enum.filter(fn %Waiter{status: status} -> status == Status.enable() end)}
+  end
+
+  def find_by_username_enabled(username) do
+    {:ok, current_waiters} = read_waiters_file()
+
+    {:ok,
+     current_waiters
+     |> Enum.find(fn %Waiter{username: waiter_username, status: status} ->
+       waiter_username == username and status == Status.enable()
+     end)}
+  end
 
   def create(new_waiter = %Waiter{}) do
     {:ok, current_waiters} = read_waiters_file()

@@ -12,28 +12,35 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.InventoryProductService do
   defp write_inventory_products_file_content(content),
     do: FileUtils.write_entities_to_file(@inventory_products_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_inventory_products_file(), fn %InventoryProduct{id: inventory_product_id} ->
-         inventory_product_id == id
-       end)}
+  def find_by_id(id) do
+    {:ok, current_inventory_products} = read_inventory_products_file()
 
-  def find_all(), do: {:ok, read_inventory_products_file()}
+    {:ok,
+     current_inventory_products
+     |> Enum.find(fn %InventoryProduct{id: inventory_product_id} ->
+       inventory_product_id == id
+     end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_inventory_products_file()
-       |> Enum.find(fn %InventoryProduct{id: inventory_product_id, status: status} ->
-         inventory_product_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_inventory_products_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_inventory_products_file()
-       |> Enum.filter(fn %InventoryProduct{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_inventory_products} = read_inventory_products_file()
+
+    {:ok,
+     current_inventory_products
+     |> Enum.find(fn %InventoryProduct{id: inventory_product_id, status: status} ->
+       inventory_product_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_inventory_products} = read_inventory_products_file()
+
+    {:ok,
+     current_inventory_products
+     |> Enum.filter(fn %InventoryProduct{status: status} -> status == Status.enable() end)}
+  end
 
   def create(new_inventory_product = %InventoryProduct{}) do
     {:ok, current_inventory_products} = read_inventory_products_file()

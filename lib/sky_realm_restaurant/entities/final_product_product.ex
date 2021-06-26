@@ -7,7 +7,9 @@ defmodule SkyRealmRestaurant.Entities.FinalProductProduct do
            [
              id: nil,
              product_id: nil,
-             final_product_id: nil
+             final_product_id: nil,
+             quantity: nil,
+             measure_unit: nil
            ]
 
   defstruct @attrs

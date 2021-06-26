@@ -12,28 +12,33 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductTaxService do
   defp write_product_taxes_file_content(content),
     do: FileUtils.write_entities_to_file(@product_taxes_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_product_taxes_file(), fn %ProductTax{id: product_tax_id} ->
-         product_tax_id == id
-       end)}
+  def find_by_id(id) do
+    {:ok, current_product_taxes} = read_product_taxes_file()
 
-  def find_all(), do: {:ok, read_product_taxes_file()}
-
-  def find_by_id_enabled(id),
-  do:
     {:ok,
-     read_product_taxes_file()
+     current_product_taxes
+     |> Enum.find(fn %ProductTax{id: product_tax_id} -> product_tax_id == id end)}
+  end
+
+  def find_all(), do: read_product_taxes_file()
+
+  def find_by_id_enabled(id) do
+    {:ok, current_product_taxes} = read_product_taxes_file()
+
+    {:ok,
+     current_product_taxes
      |> Enum.find(fn %ProductTax{id: product_tax_id, status: status} ->
        product_tax_id == id and status == Status.enable()
      end)}
+  end
 
-def find_all_enabled(),
-  do:
+  def find_all_enabled() do
+    {:ok, current_product_taxes} = read_product_taxes_file()
+
     {:ok,
-     read_product_taxes_file()
+     current_product_taxes
      |> Enum.filter(fn %ProductTax{status: status} -> status == Status.enable() end)}
+  end
 
   def create(new_product_tax = %ProductTax{}) do
     {:ok, current_product_taxes} = read_product_taxes_file()

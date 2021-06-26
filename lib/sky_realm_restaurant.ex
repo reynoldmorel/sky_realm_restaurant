@@ -18,5 +18,5 @@ defmodule SkyRealmRestaurant do
     :world
   end
 
-  def initialize, do: InitialData.run()
+  def initialize_data, do: InitialData.run()
 end

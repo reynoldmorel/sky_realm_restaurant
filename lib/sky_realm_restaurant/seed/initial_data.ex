@@ -9,6 +9,13 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
   alias SkyRealmRestaurant.Controllers.FinalProductController
   alias SkyRealmRestaurant.Controllers.ProductController
   alias SkyRealmRestaurant.Controllers.InventoryController
+  alias SkyRealmRestaurant.Controllers.TaxController
+  alias SkyRealmRestaurant.Services.InMemoryStore.RoleService
+  alias SkyRealmRestaurant.Services.InMemoryStore.UserRoleService
+  alias SkyRealmRestaurant.Services.InMemoryStore.ProductCategoryService
+  alias SkyRealmRestaurant.Services.InMemoryStore.ProductTaxService
+  alias SkyRealmRestaurant.Services.InMemoryStore.InventoryProductService
+  alias SkyRealmRestaurant.Services.InMemoryStore.FinalProductProductService
 
   alias SkyRealmRestaurant.Entities.Cashier
   alias SkyRealmRestaurant.Entities.Employee
@@ -20,11 +27,20 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
   alias SkyRealmRestaurant.Entities.FinalProduct
   alias SkyRealmRestaurant.Entities.Product
   alias SkyRealmRestaurant.Entities.Inventory
+  alias SkyRealmRestaurant.Entities.Tax
+  alias SkyRealmRestaurant.Entities.Role
+  alias SkyRealmRestaurant.Entities.UserRole
+  alias SkyRealmRestaurant.Entities.ProductCategory
+  alias SkyRealmRestaurant.Entities.ProductTax
+  alias SkyRealmRestaurant.Entities.InventoryProduct
+  alias SkyRealmRestaurant.Entities.FinalProductProduct
 
   alias SkyRealmRestaurant.Constants.MeasureUnit
+  alias SkyRealmRestaurant.Constants.CookingStatus
 
   def run do
     create_ceo()
+    create_users()
     create_cashiers()
     create_waiters()
     create_clients()
@@ -33,6 +49,14 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
     create_products()
     create_final_products()
     create_inventories()
+    create_taxes()
+    create_roles()
+    create_user_roles()
+    create_product_categories()
+    create_product_taxes()
+    create_inventory_products()
+    create_final_product_products()
+    {:ok}
   end
 
   def create_ceo() do
@@ -211,7 +235,8 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
       display_name: "Hamburger",
       price: 350,
       supported_measure_units: [MeasureUnit.unit()],
-      difficulty_level: 5
+      difficulty_level: 5,
+      cooking_steps: CookingStatus.get_cooking_steps(2)
     }
 
     FinalProductController.create(final_product_hamburger)
@@ -222,10 +247,23 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
       display_name: "Jam Sandwich",
       price: 350,
       supported_measure_units: [MeasureUnit.unit()],
-      difficulty_level: 3
+      difficulty_level: 3,
+      cooking_steps: CookingStatus.get_cooking_steps(3)
     }
 
     FinalProductController.create(final_product_jam_sandwich)
+
+    final_product_lemon_juice = %FinalProduct{
+      serial: "xxx-0fp-003",
+      name: "Lemon Juice",
+      display_name: "Lemon Juice",
+      price: 50,
+      supported_measure_units: [MeasureUnit.unit()],
+      difficulty_level: 1,
+      cooking_steps: CookingStatus.get_cooking_steps(5)
+    }
+
+    FinalProductController.create(final_product_lemon_juice)
   end
 
   def create_inventories() do
@@ -234,5 +272,386 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
     }
 
     InventoryController.create(inventory)
+  end
+
+  def create_taxes() do
+    tax_18 = %Tax{
+      name: "18% ITBIS",
+      tax_value: 0.18,
+      tax_percentage: 18,
+      is_order: false,
+      is_product: true
+    }
+
+    TaxController.create(tax_18)
+
+    tax_10_ley = %Tax{
+      name: "10% Ley",
+      tax_value: 0.1,
+      tax_percentage: 10,
+      is_order: true,
+      is_product: false
+    }
+
+    TaxController.create(tax_10_ley)
+  end
+
+  def create_roles() do
+    role_admin = %Role{
+      name: "admin"
+    }
+
+    RoleService.create(role_admin)
+
+    role_chef = %Role{
+      name: "chef"
+    }
+
+    RoleService.create(role_chef)
+
+    role_user = %Role{
+      name: "user"
+    }
+
+    RoleService.create(role_user)
+
+    role_client = %Role{
+      name: "client"
+    }
+
+    RoleService.create(role_client)
+
+    role_waiter = %Role{
+      name: "waiter"
+    }
+
+    RoleService.create(role_waiter)
+
+    role_cashier = %Role{
+      name: "cashier"
+    }
+
+    RoleService.create(role_cashier)
+  end
+
+  def create_user_roles() do
+    {:ok, [%Role{id: role_admin_id} | roles]} = RoleService.find_all()
+    [%Role{id: role_chef_id} | roles] = roles
+    [%Role{id: role_user_id} | roles] = roles
+    [%Role{id: role_client_id} | roles] = roles
+    [%Role{id: role_waiter_id} | roles] = roles
+    [%Role{id: role_cashier_id} | _roles] = roles
+
+    {:ok, %User{id: user_jalmonte_id}} = UserController.find_by_username_enabled("jalmonte")
+
+    {:ok, %Employee{id: ceo_jgilbert_id}} =
+      EmployeeController.find_by_username_enabled("jgilbert")
+
+    {:ok, %Cashier{id: cashier_msmith_id}} = CashierController.find_by_username_enabled("msmith")
+
+    {:ok, %Waiter{id: waiter_pperez_id}} = WaiterController.find_by_username_enabled("pperez")
+
+    {:ok, %Client{id: cient_jalmanzar_id}} =
+      ClientController.find_by_username_enabled("jalmanzar")
+
+    {:ok, %Chef{id: chef_atorres_id}} = ChefController.find_by_username_enabled("atorres")
+
+    {:ok, %Chef{id: chef_acapellan_id}} = ChefController.find_by_username_enabled("acapellan")
+
+    {:ok, %Chef{id: chef_rmorel_id}} = ChefController.find_by_username_enabled("rmorel")
+
+    UserRoleService.create(%UserRole{user_id: user_jalmonte_id, role_id: role_user_id})
+
+    UserRoleService.create(%UserRole{user_id: ceo_jgilbert_id, role_id: role_admin_id})
+
+    UserRoleService.create(%UserRole{user_id: cashier_msmith_id, role_id: role_cashier_id})
+
+    UserRoleService.create(%UserRole{user_id: waiter_pperez_id, role_id: role_waiter_id})
+
+    UserRoleService.create(%UserRole{user_id: cient_jalmanzar_id, role_id: role_client_id})
+
+    UserRoleService.create(%UserRole{user_id: chef_atorres_id, role_id: role_chef_id})
+
+    UserRoleService.create(%UserRole{user_id: chef_acapellan_id, role_id: role_chef_id})
+
+    UserRoleService.create(%UserRole{user_id: chef_rmorel_id, role_id: role_chef_id})
+  end
+
+  def create_product_categories() do
+    {:ok, [%Category{id: cateogry_beverages_id} | categories]} = CategoryController.find_all()
+    [%Category{id: category_sandwiches} | categories] = categories
+    [%Category{id: category_fries} | _categories] = categories
+
+    {:ok, %Product{id: product_cheese_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-001")
+
+    {:ok, %Product{id: product_tomatoe_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-002")
+
+    {:ok, %Product{id: product_bread_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-003")
+
+    {:ok, %Product{id: product_jam_id}} = ProductController.find_by_serial_enabled("xxx-000-004")
+
+    {:ok, %FinalProduct{id: final_product_hamburger_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-001")
+
+    {:ok, %FinalProduct{id: final_product_jam_sandwich_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-002")
+
+    {:ok, %FinalProduct{id: final_product_lemon_juice_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-003")
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: product_cheese_id,
+      category_id: category_sandwiches
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: product_tomatoe_id,
+      category_id: category_sandwiches
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: product_bread_id,
+      category_id: category_sandwiches
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: product_jam_id,
+      category_id: category_sandwiches
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: product_jam_id,
+      category_id: category_fries
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: final_product_hamburger_id,
+      category_id: category_sandwiches
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: final_product_jam_sandwich_id,
+      category_id: category_sandwiches
+    })
+
+    ProductCategoryService.create(%ProductCategory{
+      product_id: final_product_lemon_juice_id,
+      category_id: cateogry_beverages_id
+    })
+  end
+
+  def create_product_taxes() do
+    {:ok, [%Tax{id: tax_18_id} | _taxes]} = TaxController.find_all()
+
+    {:ok, %Product{id: product_cheese_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-001")
+
+    {:ok, %Product{id: product_tomatoe_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-002")
+
+    {:ok, %Product{id: product_bread_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-003")
+
+    {:ok, %Product{id: product_jam_id}} = ProductController.find_by_serial_enabled("xxx-000-004")
+
+    {:ok, %FinalProduct{id: final_product_hamburger_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-001")
+
+    {:ok, %FinalProduct{id: final_product_jam_sandwich_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-002")
+
+    {:ok, %FinalProduct{id: final_product_lemon_juice_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-003")
+
+    ProductTaxService.create(%ProductTax{
+      product_id: product_cheese_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: product_tomatoe_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: product_bread_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: product_jam_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: product_jam_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: final_product_hamburger_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: final_product_jam_sandwich_id,
+      tax_id: tax_18_id
+    })
+
+    ProductTaxService.create(%ProductTax{
+      product_id: final_product_lemon_juice_id,
+      tax_id: tax_18_id
+    })
+  end
+
+  def create_inventory_products() do
+    {:ok, [%Inventory{id: inventory_id} | _inventories]} = InventoryController.find_all()
+
+    {:ok, %Product{id: product_cheese_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-001")
+
+    {:ok, %Product{id: product_tomatoe_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-002")
+
+    {:ok, %Product{id: product_bread_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-003")
+
+    {:ok, %Product{id: product_jam_id}} = ProductController.find_by_serial_enabled("xxx-000-004")
+
+    {:ok, %FinalProduct{id: final_product_hamburger_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-001")
+
+    {:ok, %FinalProduct{id: final_product_jam_sandwich_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-002")
+
+    {:ok, %FinalProduct{id: final_product_lemon_juice_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-003")
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: product_cheese_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: product_tomatoe_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: product_bread_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: product_jam_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: product_jam_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: final_product_hamburger_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: final_product_jam_sandwich_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    InventoryProductService.create(%InventoryProduct{
+      product_id: final_product_lemon_juice_id,
+      inventory_id: inventory_id,
+      quantity: 100,
+      measure_unit: MeasureUnit.unit()
+    })
+  end
+
+  def create_final_product_products() do
+    {:ok, %Product{id: product_cheese_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-001")
+
+    {:ok, %Product{id: product_tomatoe_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-002")
+
+    {:ok, %Product{id: product_bread_id}} =
+      ProductController.find_by_serial_enabled("xxx-000-003")
+
+    {:ok, %Product{id: product_jam_id}} = ProductController.find_by_serial_enabled("xxx-000-004")
+
+    {:ok, %FinalProduct{id: final_product_hamburger_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-001")
+
+    {:ok, %FinalProduct{id: final_product_jam_sandwich_id}} =
+      FinalProductController.find_by_serial_enabled("xxx-0fp-002")
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_cheese_id,
+      final_product_id: final_product_hamburger_id,
+      quantity: 2,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_tomatoe_id,
+      final_product_id: final_product_hamburger_id,
+      quantity: 1,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_bread_id,
+      final_product_id: final_product_hamburger_id,
+      quantity: 2,
+      measure_unit: MeasureUnit.slice()
+    })
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_cheese_id,
+      final_product_id: final_product_jam_sandwich_id,
+      quantity: 2,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_jam_id,
+      final_product_id: final_product_jam_sandwich_id,
+      quantity: 2,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_tomatoe_id,
+      final_product_id: final_product_jam_sandwich_id,
+      quantity: 1,
+      measure_unit: MeasureUnit.unit()
+    })
+
+    FinalProductProductService.create(%FinalProductProduct{
+      product_id: product_bread_id,
+      final_product_id: final_product_jam_sandwich_id,
+      quantity: 2,
+      measure_unit: MeasureUnit.slice()
+    })
   end
 end

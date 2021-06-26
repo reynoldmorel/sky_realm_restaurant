@@ -12,36 +12,43 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductService do
   defp write_products_file_content(content),
     do: FileUtils.write_entities_to_file(@products_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_products_file(), fn %Product{id: product_id} ->
-         product_id == id
-       end)}
+  def find_by_id(id) do
+    {:ok, current_products} = read_products_file()
 
-  def find_all(), do: {:ok, read_products_file()}
+    {:ok,
+     current_products
+     |> Enum.find(fn %Product{id: product_id} -> product_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_products_file()
-       |> Enum.find(fn %Product{id: product_id, status: status} ->
-         product_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_products_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_products_file()
-       |> Enum.filter(fn %Product{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_products} = read_products_file()
 
-  def find_by_serial_enabled(serial),
-    do:
-      {:ok,
-       read_products_file()
-       |> Enum.find(fn %Product{serial: product_serial, status: status} ->
-         product_serial == serial and status == Status.enable()
-       end)}
+    {:ok,
+     current_products
+     |> Enum.find(fn %Product{id: product_id, status: status} ->
+       product_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_products} = read_products_file()
+
+    {:ok,
+     current_products
+     |> Enum.filter(fn %Product{status: status} -> status == Status.enable() end)}
+  end
+
+  def find_by_serial_enabled(serial) do
+    {:ok, current_products} = read_products_file()
+
+    {:ok,
+     current_products
+     |> Enum.find(fn %Product{serial: product_serial, status: status} ->
+       product_serial == serial and status == Status.enable()
+     end)}
+  end
 
   def create(new_product = %Product{}) do
     {:ok, current_products} = read_products_file()

@@ -12,28 +12,33 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
   defp write_status_histories_file_content(content),
     do: FileUtils.write_entities_to_file(@status_histories_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_status_histories_file(), fn %StatusHistory{id: status_history_id} ->
-         status_history_id == id
-       end)}
+  def find_by_id(id) do
+    {:ok, current_status_histories} = read_status_histories_file()
 
-  def find_all(), do: {:ok, read_status_histories_file()}
+    {:ok,
+     current_status_histories
+     |> Enum.find(fn %StatusHistory{id: status_history_id} -> status_history_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_status_histories_file()
-       |> Enum.find(fn %StatusHistory{id: status_history_id, status: status} ->
-         status_history_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_status_histories_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_status_histories_file()
-       |> Enum.filter(fn %StatusHistory{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_status_histories} = read_status_histories_file()
+
+    {:ok,
+     current_status_histories
+     |> Enum.find(fn %StatusHistory{id: status_history_id, status: status} ->
+       status_history_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_status_histories} = read_status_histories_file()
+
+    {:ok,
+     current_status_histories
+     |> Enum.filter(fn %StatusHistory{status: status} -> status == Status.enable() end)}
+  end
 
   def create(new_status_history = %StatusHistory{}) do
     {:ok, current_status_histories} = read_status_histories_file()

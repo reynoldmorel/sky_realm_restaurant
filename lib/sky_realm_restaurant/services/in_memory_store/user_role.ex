@@ -12,28 +12,32 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserRoleService do
   defp write_user_roles_file_content(content),
     do: FileUtils.write_entities_to_file(@user_roles_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok,
-       Enum.find(read_user_roles_file(), fn %UserRole{id: user_role_id} ->
-         user_role_id == id
-       end)}
+  def find_by_id(id) do
+    {:ok, current_user_roles} = read_user_roles_file()
 
-  def find_all(), do: {:ok, read_user_roles_file()}
+    {:ok,
+     current_user_roles |> Enum.find(fn %UserRole{id: user_role_id} -> user_role_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_user_roles_file()
-       |> Enum.find(fn %UserRole{id: user_role_id, status: status} ->
-         user_role_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_user_roles_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_user_roles_file()
-       |> Enum.filter(fn %UserRole{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_user_roles} = read_user_roles_file()
+
+    {:ok,
+     current_user_roles
+     |> Enum.find(fn %UserRole{id: user_role_id, status: status} ->
+       user_role_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_user_roles} = read_user_roles_file()
+
+    {:ok,
+     current_user_roles
+     |> Enum.filter(fn %UserRole{status: status} -> status == Status.enable() end)}
+  end
 
   def create(new_user_role = %UserRole{}) do
     {:ok, current_user_roles} = read_user_roles_file()

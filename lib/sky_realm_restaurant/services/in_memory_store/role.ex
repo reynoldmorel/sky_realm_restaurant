@@ -13,7 +13,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.RoleService do
   def find_by_id(id),
     do: {:ok, Enum.find(read_roles_file(), fn %Role{id: role_id} -> role_id == id end)}
 
-  def find_all(), do: {:ok, read_roles_file()}
+  def find_all(), do: read_roles_file()
 
   def create(new_role = %Role{}) do
     {:ok, current_roles} = read_roles_file()

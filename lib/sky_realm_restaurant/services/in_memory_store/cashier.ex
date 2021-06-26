@@ -11,25 +11,41 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
   defp write_cashiers_file_content(content),
     do: FileUtils.write_entities_to_file(@cashiers_file, content)
 
-  def find_by_id(id),
-    do:
-      {:ok, Enum.find(read_cashiers_file(), fn %Cashier{id: cashier_id} -> cashier_id == id end)}
+  def find_by_id(id) do
+    {:ok, current_cashiers} = read_cashiers_file()
 
-  def find_all(), do: {:ok, read_cashiers_file()}
+    {:ok, current_cashiers |> Enum.find(fn %Cashier{id: cashier_id} -> cashier_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_cashiers_file()
-       |> Enum.find(fn %Cashier{id: cashier_id, status: status} ->
-         cashier_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_cashiers_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_cashiers_file()
-       |> Enum.filter(fn %Cashier{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_cashiers} = read_cashiers_file()
+
+    {:ok,
+     current_cashiers
+     |> Enum.find(fn %Cashier{id: cashier_id, status: status} ->
+       cashier_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_cashiers} = read_cashiers_file()
+
+    {:ok,
+     current_cashiers
+     |> Enum.filter(fn %Cashier{status: status} -> status == Status.enable() end)}
+  end
+
+  def find_by_username_enabled(username) do
+    {:ok, current_cashiers} = read_cashiers_file()
+
+    {:ok,
+     current_cashiers
+     |> Enum.find(fn %Cashier{username: cashier_username, status: status} ->
+       cashier_username == username and status == Status.enable()
+     end)}
+  end
 
   def create(new_cashier = %Cashier{}) do
     {:ok, current_cashiers} = read_cashiers_file()

@@ -4,7 +4,8 @@ defmodule SkyRealmRestaurant.Constants.CookingStatus do
     %{name: "boiling", default_timeout_ms: 3000},
     %{name: "baking", default_timeout_ms: 4000},
     %{name: "toasting", default_timeout_ms: 5000},
-    %{name: "heating_oven", default_timeout_ms: 6000}
+    %{name: "heating_oven", default_timeout_ms: 6000},
+    %{name: "prepare_juice", default_timeout_ms: 1000}
   ]
 
   def get_values, do: @values
@@ -19,6 +20,8 @@ defmodule SkyRealmRestaurant.Constants.CookingStatus do
 
   def get_heating_oven_index, do: 4
 
+  def get_prepare_juice_index, do: 5
+
   def frying, do: get_values() |> Enum.at(get_frying_index())
 
   def boiling, do: get_values() |> Enum.at(get_boiling_index())
@@ -29,6 +32,8 @@ defmodule SkyRealmRestaurant.Constants.CookingStatus do
 
   def heating_oven, do: get_values() |> Enum.at(get_heating_oven_index())
 
+  def prepare_juice, do: get_values() |> Enum.at(get_prepare_juice_index())
+
   def get_cooking_steps(opt) do
     case opt do
       0 -> [heating_oven(), boiling(), baking(), toasting()]
@@ -36,6 +41,7 @@ defmodule SkyRealmRestaurant.Constants.CookingStatus do
       2 -> [baking()]
       3 -> [baking(), boiling()]
       4 -> [heating_oven(), boiling(), toasting()]
+      5 -> [prepare_juice()]
     end
   end
 end

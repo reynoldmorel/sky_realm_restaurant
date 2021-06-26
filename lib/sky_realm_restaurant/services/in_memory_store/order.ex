@@ -11,24 +11,33 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderService do
   defp write_orders_file_content(content),
     do: FileUtils.write_entities_to_file(@orders_file, content)
 
-  def find_by_id(id),
-    do: {:ok, Enum.find(read_orders_file(), fn %Order{id: order_id} -> order_id == id end)}
+  def find_by_id(id) do
+    {:ok, current_orders} = read_orders_file()
 
-  def find_all(), do: {:ok, read_orders_file()}
+    {:ok,
+     current_orders
+     |> Enum.find(fn %Order{id: order_id} -> order_id == id end)}
+  end
 
-  def find_by_id_enabled(id),
-    do:
-      {:ok,
-       read_orders_file()
-       |> Enum.find(fn %Order{id: order_id, status: status} ->
-         order_id == id and status == Status.enable()
-       end)}
+  def find_all(), do: read_orders_file()
 
-  def find_all_enabled(),
-    do:
-      {:ok,
-       read_orders_file()
-       |> Enum.filter(fn %Order{status: status} -> status == Status.enable() end)}
+  def find_by_id_enabled(id) do
+    {:ok, current_orders} = read_orders_file()
+
+    {:ok,
+     current_orders
+     |> Enum.find(fn %Order{id: order_id, status: status} ->
+       order_id == id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_enabled() do
+    {:ok, current_orders} = read_orders_file()
+
+    {:ok,
+     current_orders
+     |> Enum.filter(fn %Order{status: status} -> status == Status.enable() end)}
+  end
 
   def create(new_order = %Order{}) do
     {:ok, current_orders} = read_orders_file()

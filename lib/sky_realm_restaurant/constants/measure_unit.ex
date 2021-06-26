@@ -1,5 +1,11 @@
 defmodule SkyRealmRestaurant.Constants.MeasureUnit do
-  @values ["package", "unit", "liter", "cup", "slice"]
+  @values [
+    %{name: "package", units: 10},
+    %{name: "unit", units: 1},
+    %{name: "liter", units: 0.5},
+    %{name: "cup", units: 0.3},
+    %{name: "slice", units: 0.5},
+  ]
 
   def get_values, do: @values
 

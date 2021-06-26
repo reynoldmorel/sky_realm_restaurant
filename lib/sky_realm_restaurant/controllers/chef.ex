@@ -10,6 +10,8 @@ defmodule SkyRealmRestaurant.Controllers.ChefController do
 
   def find_all_enabled(), do: ChefService.find_all_enabled()
 
+  def find_by_username_enabled(id), do: ChefService.find_by_username_enabled(id)
+
   def create(new_chef = %Chef{}), do: ChefService.create(new_chef)
 
   def update(id, updated_chef = %Chef{}), do: ChefService.update(id, updated_chef)
