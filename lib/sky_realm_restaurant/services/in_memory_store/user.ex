@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserService do
   alias SkyRealmRestaurant.Entities.User
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @users_file "in_memory_store/users.txt"
 
   defp read_users_file(), do: FileUtils.read_entities_from_file(@users_file, User)
@@ -14,6 +16,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserService do
 
   def find_all(), do: {:ok, read_users_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_users_file()
+       |> Enum.find(fn %User{id: user_id, status: status} ->
+         user_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_users_file()
+       |> Enum.filter(fn %User{status: status} -> status == Status.enable() end)}
+
   def create(new_user = %User{}) do
     {:ok, current_users} = read_users_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -23,6 +39,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserService do
     new_user = %User{
       new_user
       | id: user_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

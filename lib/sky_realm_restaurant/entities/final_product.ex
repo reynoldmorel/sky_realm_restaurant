@@ -5,6 +5,7 @@ defmodule SkyRealmRestaurant.Entities.FinalProduct do
 
   @attrs Product.get_attrs() ++
            [
+             cooking_steps: [],
              difficulty_level: nil
            ]
 

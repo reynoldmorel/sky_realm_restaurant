@@ -1,5 +1,5 @@
 defmodule SkyRealmRestaurant.Constants.PreparationStatus do
-  @values ["ready", "preparing", "completed", "cancelled"]
+  @values ["ready", "preparing", "completed", "canceled"]
 
   def get_values, do: @values
 
@@ -9,7 +9,7 @@ defmodule SkyRealmRestaurant.Constants.PreparationStatus do
 
   def get_completed_index, do: 2
 
-  def get_cancelled_index, do: 3
+  def get_canceled_index, do: 3
 
   def ready, do: get_values() |> Enum.at(get_ready_index())
 
@@ -17,5 +17,5 @@ defmodule SkyRealmRestaurant.Constants.PreparationStatus do
 
   def completed, do: get_values() |> Enum.at(get_completed_index())
 
-  def cancelled, do: get_values() |> Enum.at(get_cancelled_index())
+  def canceled, do: get_values() |> Enum.at(get_canceled_index())
 end

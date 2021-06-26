@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.TaxService do
   alias SkyRealmRestaurant.Entities.Tax
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @taxes_file "in_memory_store/taxes.txt"
 
   defp read_taxes_file(), do: FileUtils.read_entities_from_file(@taxes_file, Tax)
@@ -14,6 +16,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.TaxService do
 
   def find_all(), do: {:ok, read_taxes_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_taxes_file()
+       |> Enum.find(fn %Tax{id: tax_id, status: status} ->
+         tax_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_taxes_file()
+       |> Enum.filter(fn %Tax{status: status} -> status == Status.enable() end)}
+
   def create(new_tax = %Tax{}) do
     {:ok, current_taxes} = read_taxes_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -23,6 +39,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.TaxService do
     new_tax = %Tax{
       new_tax
       | id: tax_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

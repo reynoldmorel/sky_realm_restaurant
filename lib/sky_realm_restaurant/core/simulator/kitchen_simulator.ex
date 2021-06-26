@@ -1,4 +1,7 @@
 defmodule SkyRealmRestaurant.Core.Simulator.KitchenSimulator do
+  alias SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService
+  alias SkyRealmRestaurant.Services.InMemoryStore.ChefService
+
   def process(state = %{kitchen_simulator_state: _kitchen_simulator_state}) do
     {:ok, updated_state} = process(:assign_new_orders_to_chefs, state)
     updated_state = Map.merge(state, updated_state)

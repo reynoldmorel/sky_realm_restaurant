@@ -1,9 +1,9 @@
 defmodule SkyRealmRestaurant do
+  alias SkyRealmRestaurant.Seed.InitialData
+
   @moduledoc """
   Documentation for `SkyRealmRestaurant`.
   """
-
-  alias SkyRealmRestaurant.Entities.Chef
 
   @doc """
   Hello world.
@@ -18,8 +18,5 @@ defmodule SkyRealmRestaurant do
     :world
   end
 
-  def print_me do
-    user = %Chef{name: "Reynold"}
-    IO.inspect(Jason.encode!(user))
-  end
+  def initialize, do: InitialData.run()
 end

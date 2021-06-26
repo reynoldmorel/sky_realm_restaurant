@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ClientService do
   alias SkyRealmRestaurant.Entities.Client
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @clients_file "in_memory_store/clients.txt"
 
   defp read_clients_file(), do: FileUtils.read_entities_from_file(@clients_file, Client)
@@ -14,6 +16,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ClientService do
 
   def find_all(), do: {:ok, read_clients_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_clients_file()
+       |> Enum.find(fn %Client{id: client_id, status: status} ->
+         client_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_clients_file()
+       |> Enum.filter(fn %Client{status: status} -> status == Status.enable() end)}
+
   def create(new_client = %Client{}) do
     {:ok, current_clients} = read_clients_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -23,6 +39,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ClientService do
     new_client = %Client{
       new_client
       | id: client_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

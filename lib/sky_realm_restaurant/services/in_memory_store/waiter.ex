@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.WaiterService do
   alias SkyRealmRestaurant.Entities.Waiter
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @waiters_file "in_memory_store/waiters.txt"
 
   defp read_waiters_file(), do: FileUtils.read_entities_from_file(@waiters_file, Waiter)
@@ -14,6 +16,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.WaiterService do
 
   def find_all(), do: {:ok, read_waiters_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_waiters_file()
+       |> Enum.find(fn %Waiter{id: waiter_id, status: status} ->
+         waiter_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_waiters_file()
+       |> Enum.filter(fn %Waiter{status: status} -> status == Status.enable() end)}
+
   def create(new_waiter = %Waiter{}) do
     {:ok, current_waiters} = read_waiters_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -23,6 +39,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.WaiterService do
     new_waiter = %Waiter{
       new_waiter
       | id: waiter_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

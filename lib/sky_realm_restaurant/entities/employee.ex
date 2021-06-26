@@ -1,4 +1,6 @@
 defmodule SkyRealmRestaurant.Entities.Employee do
+  @derive Jason.Encoder
+
   alias SkyRealmRestaurant.Entities.User
 
   @attrs User.get_attrs() ++
@@ -6,6 +8,8 @@ defmodule SkyRealmRestaurant.Entities.Employee do
              employee_code: nil,
              employee_type: nil
            ]
+
+  defstruct @attrs
 
   def get_attrs, do: @attrs
 

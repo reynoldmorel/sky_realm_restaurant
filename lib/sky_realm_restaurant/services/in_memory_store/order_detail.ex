@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
   alias SkyRealmRestaurant.Entities.OrderDetail
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @order_details_file "in_memory_store/order_details.txt"
 
   defp read_order_details_file(),
@@ -19,6 +21,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
 
   def find_all(), do: {:ok, read_order_details_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_order_details_file()
+       |> Enum.find(fn %OrderDetail{id: order_detail_id, status: status} ->
+         order_detail_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_order_details_file()
+       |> Enum.filter(fn %OrderDetail{status: status} -> status == Status.enable() end)}
+
   def create(new_order_detail = %OrderDetail{}) do
     {:ok, current_order_details} = read_order_details_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -28,6 +44,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
     new_order_detail = %OrderDetail{
       new_order_detail
       | id: order_detail_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

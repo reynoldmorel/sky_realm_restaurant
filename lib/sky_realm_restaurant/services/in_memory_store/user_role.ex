@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserRoleService do
   alias SkyRealmRestaurant.Entities.UserRole
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @user_roles_file "in_memory_store/user_roles.txt"
 
   defp read_user_roles_file(),
@@ -19,6 +21,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserRoleService do
 
   def find_all(), do: {:ok, read_user_roles_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_user_roles_file()
+       |> Enum.find(fn %UserRole{id: user_role_id, status: status} ->
+         user_role_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_user_roles_file()
+       |> Enum.filter(fn %UserRole{status: status} -> status == Status.enable() end)}
+
   def create(new_user_role = %UserRole{}) do
     {:ok, current_user_roles} = read_user_roles_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -28,6 +44,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserRoleService do
     new_user_role = %UserRole{
       new_user_role
       | id: user_role_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

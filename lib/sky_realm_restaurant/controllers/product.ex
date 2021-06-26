@@ -6,6 +6,12 @@ defmodule SkyRealmRestaurant.Controllers.ProductController do
 
   def find_all(), do: ProductService.find_all()
 
+  def find_by_id_enabled(id), do: ProductService.find_by_id_enabled(id)
+
+  def find_all_enabled(), do: ProductService.find_all_enabled()
+
+  def find_by_serial_enabled(serial), do: ProductService.find_by_serial_enabled(serial)
+
   def create(new_product = %Product{}),
     do: ProductService.create(new_product)
 

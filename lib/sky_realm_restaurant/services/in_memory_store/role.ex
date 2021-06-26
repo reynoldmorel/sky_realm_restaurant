@@ -2,6 +2,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.RoleService do
   alias SkyRealmRestaurant.Entities.Role
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+
   @roles_file "in_memory_store/roles.txt"
 
   defp read_roles_file(), do: FileUtils.read_entities_from_file(@roles_file, Role)

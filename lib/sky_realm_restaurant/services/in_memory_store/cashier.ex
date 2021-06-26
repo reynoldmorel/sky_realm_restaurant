@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
   alias SkyRealmRestaurant.Entities.Cashier
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @cashiers_file "in_memory_store/cashiers.txt"
 
   defp read_cashiers_file(), do: FileUtils.read_entities_from_file(@cashiers_file, Cashier)
@@ -15,6 +17,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
 
   def find_all(), do: {:ok, read_cashiers_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_cashiers_file()
+       |> Enum.find(fn %Cashier{id: cashier_id, status: status} ->
+         cashier_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_cashiers_file()
+       |> Enum.filter(fn %Cashier{status: status} -> status == Status.enable() end)}
+
   def create(new_cashier = %Cashier{}) do
     {:ok, current_cashiers} = read_cashiers_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -24,6 +40,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.CashierService do
     new_cashier = %Cashier{
       new_cashier
       | id: cashier_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

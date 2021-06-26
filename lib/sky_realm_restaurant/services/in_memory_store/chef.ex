@@ -2,6 +2,9 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
   alias SkyRealmRestaurant.Entities.Chef
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+  alias SkyRealmRestaurant.Constants.ChefWorkingStatus
+
   @chefs_file "in_memory_store/chefs.txt"
 
   defp read_chefs_file(), do: FileUtils.read_entities_from_file(@chefs_file, Chef)
@@ -14,6 +17,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
 
   def find_all(), do: {:ok, read_chefs_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_chefs_file()
+       |> Enum.find(fn %Chef{id: chef_id, status: status} ->
+         chef_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_chefs_file()
+       |> Enum.filter(fn %Chef{status: status} -> status == Status.enable() end)}
+
   def create(new_chef = %Chef{}) do
     {:ok, current_chefs} = read_chefs_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -23,6 +40,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
     new_chef = %Chef{
       new_chef
       | id: chef_id,
+        working_status: ChefWorkingStatus.idle(),
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

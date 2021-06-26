@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
   alias SkyRealmRestaurant.Entities.FinalProduct
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @final_products_file "in_memory_store/final_products.txt"
 
   defp read_final_products_file(),
@@ -19,6 +21,28 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
 
   def find_all(), do: {:ok, read_final_products_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_final_products_file()
+       |> Enum.find(fn %FinalProduct{id: final_product_id, status: status} ->
+         final_product_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_final_products_file()
+       |> Enum.filter(fn %FinalProduct{status: status} -> status == Status.enable() end)}
+
+  def find_by_serial_enabled(serial),
+    do:
+      {:ok,
+       read_final_products_file()
+       |> Enum.find(fn %FinalProduct{serial: final_product_serial, status: status} ->
+         final_product_serial == serial and status == Status.enable()
+       end)}
+
   def create(new_final_product = %FinalProduct{}) do
     {:ok, current_final_products} = read_final_products_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -28,6 +52,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
     new_final_product = %FinalProduct{
       new_final_product
       | id: final_product_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }
@@ -52,7 +77,13 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductService do
 
     updated_final_product = %FinalProduct{
       existing_final_product
-      | difficulty_level:
+      | cooking_steps:
+          Map.get(
+            updated_final_product,
+            :cooking_steps,
+            existing_final_product.cooking_steps
+          ),
+        difficulty_level:
           Map.get(
             updated_final_product,
             :difficulty_level,

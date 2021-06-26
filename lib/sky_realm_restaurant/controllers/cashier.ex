@@ -6,6 +6,10 @@ defmodule SkyRealmRestaurant.Controllers.CashierController do
 
   def find_all(), do: CashierService.find_all()
 
+  def find_by_id_enabled(id), do: CashierService.find_by_id_enabled(id)
+
+  def find_all_enabled(), do: CashierService.find_all_enabled()
+
   def create(new_cashier = %Cashier{}), do: CashierService.create(new_cashier)
 
   def update(id, updated_cashier = %Cashier{}), do: CashierService.update(id, updated_cashier)

@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductService do
   alias SkyRealmRestaurant.Entities.Product
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @products_file "in_memory_store/products.txt"
 
   defp read_products_file(),
@@ -19,6 +21,28 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductService do
 
   def find_all(), do: {:ok, read_products_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_products_file()
+       |> Enum.find(fn %Product{id: product_id, status: status} ->
+         product_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_products_file()
+       |> Enum.filter(fn %Product{status: status} -> status == Status.enable() end)}
+
+  def find_by_serial_enabled(serial),
+    do:
+      {:ok,
+       read_products_file()
+       |> Enum.find(fn %Product{serial: product_serial, status: status} ->
+         product_serial == serial and status == Status.enable()
+       end)}
+
   def create(new_product = %Product{}) do
     {:ok, current_products} = read_products_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -28,6 +52,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductService do
     new_product = %Product{
       new_product
       | id: product_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }

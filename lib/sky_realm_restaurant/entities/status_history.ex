@@ -8,6 +8,7 @@ defmodule SkyRealmRestaurant.Entities.StatusHistory do
              id: nil,
              model_id: nil,
              model_type: nil,
+             parent_id: nil,
              from_status: nil,
              to_status: nil,
              assigned_chef_id: nil,

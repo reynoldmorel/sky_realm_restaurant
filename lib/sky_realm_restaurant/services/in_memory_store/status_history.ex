@@ -2,6 +2,8 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
   alias SkyRealmRestaurant.Entities.StatusHistory
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
+  alias SkyRealmRestaurant.Constants.Status
+
   @status_histories_file "in_memory_store/status_histories.txt"
 
   defp read_status_histories_file(),
@@ -19,6 +21,20 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
 
   def find_all(), do: {:ok, read_status_histories_file()}
 
+  def find_by_id_enabled(id),
+    do:
+      {:ok,
+       read_status_histories_file()
+       |> Enum.find(fn %StatusHistory{id: status_history_id, status: status} ->
+         status_history_id == id and status == Status.enable()
+       end)}
+
+  def find_all_enabled(),
+    do:
+      {:ok,
+       read_status_histories_file()
+       |> Enum.filter(fn %StatusHistory{status: status} -> status == Status.enable() end)}
+
   def create(new_status_history = %StatusHistory{}) do
     {:ok, current_status_histories} = read_status_histories_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
@@ -28,6 +44,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
     new_status_history = %StatusHistory{
       new_status_history
       | id: status_history_id,
+        status: Status.enable(),
         created_at: current_date_unix,
         updated_at: current_date_unix
     }
@@ -55,6 +72,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
       | model_id: Map.get(updated_status_history, :model_id, existing_status_history.model_id),
         model_type:
           Map.get(updated_status_history, :model_type, existing_status_history.model_type),
+        parent_id: Map.get(updated_status_history, :parent_id, existing_status_history.parent_id),
         from_status:
           Map.get(updated_status_history, :from_status, existing_status_history.from_status),
         to_status: Map.get(updated_status_history, :to_status, existing_status_history.to_status),

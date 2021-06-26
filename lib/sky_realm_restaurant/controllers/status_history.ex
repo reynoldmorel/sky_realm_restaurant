@@ -6,6 +6,10 @@ defmodule SkyRealmRestaurant.Controllers.StatusHistoryController do
 
   def find_all(), do: StatusHistoryService.find_all()
 
+  def find_by_id_enabled(id), do: StatusHistoryService.find_by_id_enabled(id)
+
+  def find_all_enabled(), do: StatusHistoryService.find_all_enabled()
+
   def create(new_status_history = %StatusHistory{}),
     do: StatusHistoryService.create(new_status_history)
 

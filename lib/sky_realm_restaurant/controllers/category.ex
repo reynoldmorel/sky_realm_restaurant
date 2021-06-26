@@ -6,6 +6,10 @@ defmodule SkyRealmRestaurant.Controllers.CategoryController do
 
   def find_all(), do: CategoryService.find_all()
 
+  def find_by_id_enabled(id), do: CategoryService.find_by_id_enabled(id)
+
+  def find_all_enabled(), do: CategoryService.find_all_enabled()
+
   def create(new_category = %Category{}), do: CategoryService.create(new_category)
 
   def update(id, updated_category = %Category{}), do: CategoryService.update(id, updated_category)
