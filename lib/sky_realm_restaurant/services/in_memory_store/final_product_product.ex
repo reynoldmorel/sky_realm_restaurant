@@ -42,6 +42,47 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.FinalProductProductService d
      |> Enum.filter(fn %FinalProductProduct{status: status} -> status == Status.enable() end)}
   end
 
+  def find_all_by_final_product_id_enabled(final_product_id) do
+    {:ok, current_final_product_products} = read_final_product_products_file()
+
+    {:ok,
+     current_final_product_products
+     |> Enum.filter(fn %FinalProductProduct{
+                         final_product_id: final_product_product_final_product_id,
+                         status: status
+                       } ->
+       final_product_product_final_product_id == final_product_id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_by_product_id_enabled(product_id) do
+    {:ok, current_final_product_products} = read_final_product_products_file()
+
+    {:ok,
+     current_final_product_products
+     |> Enum.filter(fn %FinalProductProduct{
+                         product_id: final_product_product_product_id,
+                         status: status
+                       } ->
+       final_product_product_product_id == product_id and status == Status.enable()
+     end)}
+  end
+
+  def find_by_final_product_id_and_product_id_enabled(final_product_id, product_id) do
+    {:ok, current_final_product_products} = read_final_product_products_file()
+
+    {:ok,
+     current_final_product_products
+     |> Enum.filter(fn %FinalProductProduct{
+                         final_product_id: final_product_product_final_product_id,
+                         product_id: final_product_product_product_id,
+                         status: status
+                       } ->
+       final_product_product_final_product_id == final_product_id and
+         final_product_product_product_id == product_id and status == Status.enable()
+     end)}
+  end
+
   def create(new_final_product_product = %FinalProductProduct{}) do
     {:ok, current_final_product_products} = read_final_product_products_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

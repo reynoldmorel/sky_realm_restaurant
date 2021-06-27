@@ -6,12 +6,15 @@ defmodule SkyRealmRestaurant.Entities.Order do
   @attrs BaseAttrs.get_attrs() ++
            [
              id: nil,
-             processing_status: nil,
              cashier_id: nil,
              transaction_date: nil,
-             subtotal: nil,
-             tax_total: nil,
-             total: nil
+             subtotal: 0.0,
+             tax_total: 0.0,
+             paid_amount: 0.0,
+             returned_amount: 0.0,
+             total: 0.0,
+             order_details: nil,
+             taxes: nil
            ]
 
   defstruct @attrs

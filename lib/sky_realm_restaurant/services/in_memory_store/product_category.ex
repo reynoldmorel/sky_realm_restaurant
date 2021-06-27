@@ -40,6 +40,47 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductCategoryService do
      |> Enum.filter(fn %ProductCategory{status: status} -> status == Status.enable() end)}
   end
 
+  def find_all_by_cateogory_id_enabled(category_id) do
+    {:ok, current_product_categories} = read_product_categories_file()
+
+    {:ok,
+     current_product_categories
+     |> Enum.filter(fn %ProductCategory{
+                         category_id: product_category_category_id,
+                         status: status
+                       } ->
+       product_category_category_id == category_id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_by_product_id_enabled(product_id) do
+    {:ok, current_product_categories} = read_product_categories_file()
+
+    {:ok,
+     current_product_categories
+     |> Enum.filter(fn %ProductCategory{
+                         product_id: product_category_product_id,
+                         status: status
+                       } ->
+       product_category_product_id == product_id and status == Status.enable()
+     end)}
+  end
+
+  def find_by_cateogory_id_and_product_id_enabled(category_id, product_id) do
+    {:ok, current_product_categories} = read_product_categories_file()
+
+    {:ok,
+     current_product_categories
+     |> Enum.filter(fn %ProductCategory{
+                         category_id: product_category_category_id,
+                         product_id: product_category_product_id,
+                         status: status
+                       } ->
+       product_category_category_id == category_id and product_category_product_id == product_id and
+         status == Status.enable()
+     end)}
+  end
+
   def create(new_product_category = %ProductCategory{}) do
     {:ok, current_product_categories} = read_product_categories_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

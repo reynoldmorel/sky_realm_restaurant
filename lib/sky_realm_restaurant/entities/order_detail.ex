@@ -7,17 +7,17 @@ defmodule SkyRealmRestaurant.Entities.OrderDetail do
            [
              id: nil,
              order_id: nil,
-             product_id: nil,
-             produt_name: nil,
-             produt_serial: nil,
-             difficulty_level: nil,
-             category_id: nil,
-             quantity: nil,
-             price: nil,
-             tax_total: nil,
+             quantity: 0,
+             price: 0.0,
+             tax_total: 0.0,
              cooking_status: nil,
              preparation_status: nil,
-             processing_status: nil
+             processing_status: nil,
+             product: nil,
+             taxes: nil,
+             categories: nil,
+             selected_measure_unit: nil,
+             inventory: nil
            ]
 
   defstruct @attrs

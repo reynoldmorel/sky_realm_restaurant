@@ -39,6 +39,46 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.UserRoleService do
      |> Enum.filter(fn %UserRole{status: status} -> status == Status.enable() end)}
   end
 
+  def find_all_by_user_id_enabled(user_id) do
+    {:ok, current_user_roles} = read_user_roles_file()
+
+    {:ok,
+     current_user_roles
+     |> Enum.filter(fn %UserRole{
+                         user_id: user_role_user_id,
+                         status: status
+                       } ->
+       user_role_user_id == user_id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_by_role_id_enabled(role_id) do
+    {:ok, current_user_roles} = read_user_roles_file()
+
+    {:ok,
+     current_user_roles
+     |> Enum.filter(fn %UserRole{
+                         role_id: user_role_role_id,
+                         status: status
+                       } ->
+       user_role_role_id == role_id and status == Status.enable()
+     end)}
+  end
+
+  def find_by_user_id_and_role_id_enabled(user_id, role_id) do
+    {:ok, current_user_roles} = read_user_roles_file()
+
+    {:ok,
+     current_user_roles
+     |> Enum.filter(fn %UserRole{
+                         user_id: user_role_user_id,
+                         role_id: user_role_role_id,
+                         status: status
+                       } ->
+       user_role_user_id == user_id and user_role_role_id == role_id and status == Status.enable()
+     end)}
+  end
+
   def create(new_user_role = %UserRole{}) do
     {:ok, current_user_roles} = read_user_roles_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

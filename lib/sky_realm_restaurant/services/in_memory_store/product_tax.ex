@@ -40,6 +40,47 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ProductTaxService do
      |> Enum.filter(fn %ProductTax{status: status} -> status == Status.enable() end)}
   end
 
+  def find_all_by_tax_id_enabled(tax_id) do
+    {:ok, current_product_taxes} = read_product_taxes_file()
+
+    {:ok,
+     current_product_taxes
+     |> Enum.filter(fn %ProductTax{
+                         tax_id: product_tax_tax_id,
+                         status: status
+                       } ->
+       product_tax_tax_id == tax_id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_by_product_id_enabled(product_id) do
+    {:ok, current_product_taxes} = read_product_taxes_file()
+
+    {:ok,
+     current_product_taxes
+     |> Enum.filter(fn %ProductTax{
+                         product_id: product_tax_product_id,
+                         status: status
+                       } ->
+       product_tax_product_id == product_id and status == Status.enable()
+     end)}
+  end
+
+  def find_by_tax_id_and_product_id_enabled(tax_id, product_id) do
+    {:ok, current_product_taxes} = read_product_taxes_file()
+
+    {:ok,
+     current_product_taxes
+     |> Enum.filter(fn %ProductTax{
+                         tax_id: product_tax_tax_id,
+                         product_id: product_tax_product_id,
+                         status: status
+                       } ->
+       product_tax_tax_id == tax_id and product_tax_product_id == product_id and
+         status == Status.enable()
+     end)}
+  end
+
   def create(new_product_tax = %ProductTax{}) do
     {:ok, current_product_taxes} = read_product_taxes_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

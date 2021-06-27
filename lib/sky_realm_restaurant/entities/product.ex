@@ -10,7 +10,7 @@ defmodule SkyRealmRestaurant.Entities.Product do
              serial: nil,
              name: nil,
              display_name: nil,
-             price: nil,
+             price: 0.0,
              supported_measure_units: nil
            ]
 

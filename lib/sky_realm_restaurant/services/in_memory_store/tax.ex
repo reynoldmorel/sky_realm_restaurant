@@ -37,6 +37,26 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.TaxService do
      |> Enum.filter(fn %Tax{status: status} -> status == Status.enable() end)}
   end
 
+  def find_all_taxes_for_products_enabled() do
+    {:ok, current_taxes} = read_taxes_file()
+
+    {:ok,
+     current_taxes
+     |> Enum.filter(fn %Tax{is_product: tax_is_product, status: status} ->
+       tax_is_product == true and status == Status.enable()
+     end)}
+  end
+
+  def find_all_taxes_for_orders_enabled() do
+    {:ok, current_taxes} = read_taxes_file()
+
+    {:ok,
+     current_taxes
+     |> Enum.filter(fn %Tax{is_order: tax_is_order, status: status} ->
+       tax_is_order == true and status == Status.enable()
+     end)}
+  end
+
   def create(new_tax = %Tax{}) do
     {:ok, current_taxes} = read_taxes_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

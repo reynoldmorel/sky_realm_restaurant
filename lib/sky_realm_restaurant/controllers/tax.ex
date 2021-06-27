@@ -10,6 +10,12 @@ defmodule SkyRealmRestaurant.Controllers.TaxController do
 
   def find_all_enabled(), do: TaxService.find_all_enabled()
 
+  def find_all_taxes_for_products_enabled(),
+    do: TaxService.find_all_taxes_for_products_enabled()
+
+  def find_all_taxes_for_orders_enabled(),
+    do: TaxService.find_all_taxes_for_orders_enabled()
+
   def create(new_tax = %Tax{}), do: TaxService.create(new_tax)
 
   def update(id, updated_tax = %Tax{}), do: TaxService.update(id, updated_tax)

@@ -42,6 +42,47 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.InventoryProductService do
      |> Enum.filter(fn %InventoryProduct{status: status} -> status == Status.enable() end)}
   end
 
+  def find_all_by_inventory_id_enabled(inventory_id) do
+    {:ok, current_inventory_products} = read_inventory_products_file()
+
+    {:ok,
+     current_inventory_products
+     |> Enum.filter(fn %InventoryProduct{
+                         inventory_id: inventory_product_inventory_id,
+                         status: status
+                       } ->
+       inventory_product_inventory_id == inventory_id and status == Status.enable()
+     end)}
+  end
+
+  def find_all_by_product_id_enabled(product_id) do
+    {:ok, current_inventory_products} = read_inventory_products_file()
+
+    {:ok,
+     current_inventory_products
+     |> Enum.filter(fn %InventoryProduct{
+                         product_id: inventory_product_product_id,
+                         status: status
+                       } ->
+       inventory_product_product_id == product_id and status == Status.enable()
+     end)}
+  end
+
+  def find_by_inventory_id_and_product_id_enabled(inventory_id, product_id) do
+    {:ok, current_inventory_products} = read_inventory_products_file()
+
+    {:ok,
+     current_inventory_products
+     |> Enum.filter(fn %InventoryProduct{
+                         inventory_id: inventory_product_inventory_id,
+                         product_id: inventory_product_product_id,
+                         status: status
+                       } ->
+       inventory_product_inventory_id == inventory_id and
+         inventory_product_product_id == product_id and status == Status.enable()
+     end)}
+  end
+
   def create(new_inventory_product = %InventoryProduct{}) do
     {:ok, current_inventory_products} = read_inventory_products_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())
