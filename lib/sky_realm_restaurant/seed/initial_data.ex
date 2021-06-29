@@ -521,15 +521,6 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
 
     {:ok, %Product{id: product_jam_id}} = ProductController.find_by_serial_enabled("xxx-000-004")
 
-    {:ok, %FinalProduct{id: final_product_hamburger_id}} =
-      FinalProductController.find_by_serial_enabled("xxx-0fp-001")
-
-    {:ok, %FinalProduct{id: final_product_jam_sandwich_id}} =
-      FinalProductController.find_by_serial_enabled("xxx-0fp-002")
-
-    {:ok, %FinalProduct{id: final_product_lemon_juice_id}} =
-      FinalProductController.find_by_serial_enabled("xxx-0fp-003")
-
     InventoryProductService.create(%InventoryProduct{
       product_id: product_cheese_id,
       inventory_id: inventory_id,
@@ -560,27 +551,6 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
 
     InventoryProductService.create(%InventoryProduct{
       product_id: product_jam_id,
-      inventory_id: inventory_id,
-      quantity: 100,
-      measure_unit: MeasureUnit.unit()
-    })
-
-    InventoryProductService.create(%InventoryProduct{
-      product_id: final_product_hamburger_id,
-      inventory_id: inventory_id,
-      quantity: 100,
-      measure_unit: MeasureUnit.unit()
-    })
-
-    InventoryProductService.create(%InventoryProduct{
-      product_id: final_product_jam_sandwich_id,
-      inventory_id: inventory_id,
-      quantity: 100,
-      measure_unit: MeasureUnit.unit()
-    })
-
-    InventoryProductService.create(%InventoryProduct{
-      product_id: final_product_lemon_juice_id,
       inventory_id: inventory_id,
       quantity: 100,
       measure_unit: MeasureUnit.unit()

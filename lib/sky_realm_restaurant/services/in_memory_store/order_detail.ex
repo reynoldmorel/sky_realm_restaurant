@@ -57,7 +57,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
 
     {:ok,
      current_order_details
-     |> Enum.find(fn %OrderDetail{order_id: order_detail_order_id, status: status} ->
+     |> Enum.filter(fn %OrderDetail{order_id: order_detail_order_id, status: status} ->
        order_detail_order_id == order_id and status == Status.enable()
      end)}
   end
@@ -67,11 +67,11 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
 
     {:ok,
      current_order_details
-     |> Enum.find(fn %OrderDetail{
-                       processing_status: order_detail_processing_status,
-                       preparation_status: order_detail_preparation_status,
-                       status: status
-                     } ->
+     |> Enum.filter(fn %OrderDetail{
+                         processing_status: order_detail_processing_status,
+                         preparation_status: order_detail_preparation_status,
+                         status: status
+                       } ->
        order_detail_processing_status == nil and order_detail_preparation_status == nil and
          status == Status.enable()
      end)}
