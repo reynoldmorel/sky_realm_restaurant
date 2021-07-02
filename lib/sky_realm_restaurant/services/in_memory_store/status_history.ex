@@ -32,6 +32,22 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
      end)}
   end
 
+  def find_by_model_id_and_model_type_and_to_status_enabled(model_id, model_type, to_status) do
+    {:ok, current_status_histories} = read_status_histories_file()
+
+    {:ok,
+     current_status_histories
+     |> Enum.find(fn %StatusHistory{
+                       model_id: status_history_model_id,
+                       model_type: status_history_model_type,
+                       to_status: status_history_to_status,
+                       status: status
+                     } ->
+       status_history_model_id == model_id and status_history_model_type == model_type and
+         status_history_to_status == to_status and status == Status.enable()
+     end)}
+  end
+
   def find_all_enabled() do
     {:ok, current_status_histories} = read_status_histories_file()
 

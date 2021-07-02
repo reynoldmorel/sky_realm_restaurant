@@ -4,8 +4,14 @@ defmodule SkyRealmRestaurant.Constants.MeasureUnit do
     %{name: "unit", units: 1},
     %{name: "liter", units: 0.5},
     %{name: "cup", units: 0.3},
-    %{name: "slice", units: 0.5},
+    %{name: "slice", units: 0.5}
   ]
+
+  @attrs name: nil, units: nil
+
+  defstruct @attrs
+
+  def get_attrs, do: @attrs
 
   def get_values, do: @values
 
