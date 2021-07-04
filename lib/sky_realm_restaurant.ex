@@ -98,4 +98,10 @@ defmodule SkyRealmRestaurant do
       kitchen_simulator_state: %{queues: kitchen_simulator_queues}
     })
   end
+
+  def run do
+    initialize_data()
+    create_order()
+    run_simulator()
+  end
 end
