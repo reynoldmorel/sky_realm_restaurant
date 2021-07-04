@@ -48,6 +48,17 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.ChefService do
      end)}
   end
 
+  def find_all_available() do
+    {:ok, current_chefs} = read_chefs_file()
+
+    {:ok,
+     current_chefs
+     |> Enum.filter(fn %Chef{working_status: chef_working_status, status: status} ->
+       (chef_working_status == nil or chef_working_status == ChefWorkingStatus.idle()) and
+         status == Status.enable()
+     end)}
+  end
+
   def create(new_chef = %Chef{}) do
     {:ok, current_chefs} = read_chefs_file()
     current_date_unix = DateTime.to_unix(DateTime.utc_now())

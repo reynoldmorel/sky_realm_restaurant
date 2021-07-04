@@ -10,9 +10,9 @@ defmodule SkyRealmRestaurant.Core.Simulator.Server do
   end
 
   def handle_info(:process, state = %{simulators: simulators}) do
-    run_simulators(simulators, state)
+    updated_state = run_simulators(simulators, state)
     Process.send_after(self(), :process, 500)
-    {:noreply, state}
+    {:noreply, updated_state}
   end
 
   def run_simulators([], state), do: state
