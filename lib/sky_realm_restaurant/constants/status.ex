@@ -1,5 +1,5 @@
 defmodule SkyRealmRestaurant.Constants.Status do
-  @values ["enable", "deleted"]
+  @values ["status_enable", "status_deleted"]
 
   def get_values, do: @values
 

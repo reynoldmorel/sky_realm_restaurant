@@ -11,6 +11,7 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
   alias SkyRealmRestaurant.Utils.GeneralUtils
   alias SkyRealmRestaurant.Utils.FileUtils
   alias SkyRealmRestaurant.Constants.Status
+  alias SkyRealmRestaurant.Constants.PreparationStatus
 
   alias SkyRealmRestaurant.Services.InMemoryStore.OrderDetailProductService
   alias SkyRealmRestaurant.Services.InMemoryStore.OrderDetailCategoryService
@@ -68,12 +69,26 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
     {:ok,
      current_order_details
      |> Enum.filter(fn %OrderDetail{
-                         processing_status: order_detail_processing_status,
                          preparation_status: order_detail_preparation_status,
                          status: status
                        } ->
-       order_detail_processing_status == nil and order_detail_preparation_status == nil and
+       order_detail_preparation_status == nil and
          status == Status.enable()
+     end)}
+  end
+
+  def find_all_to_prepare_enabled() do
+    {:ok, current_order_details} = read_order_details_file()
+
+    {:ok,
+     current_order_details
+     |> Enum.filter(fn %OrderDetail{
+                         preparation_status: order_detail_preparation_status,
+                         cooking_step: order_detail_cooking_step,
+                         status: status
+                       } ->
+       order_detail_preparation_status == PreparationStatus.preparing() and
+         order_detail_cooking_step == nil and status == Status.enable()
      end)}
   end
 
@@ -294,19 +309,13 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
         quantity: Map.get(updated_order_detail, :quantity, existing_order_detail.quantity),
         price: Map.get(updated_order_detail, :price, existing_order_detail.price),
         tax_total: Map.get(updated_order_detail, :tax_total, existing_order_detail.tax_total),
-        cooking_status:
-          Map.get(updated_order_detail, :cooking_status, existing_order_detail.cooking_status),
+        cooking_step:
+          Map.get(updated_order_detail, :cooking_step, existing_order_detail.cooking_step),
         preparation_status:
           Map.get(
             updated_order_detail,
             :preparation_status,
             existing_order_detail.preparation_status
-          ),
-        processing_status:
-          Map.get(
-            updated_order_detail,
-            :processing_status,
-            existing_order_detail.processing_status
           ),
         categories: nil,
         product: nil,

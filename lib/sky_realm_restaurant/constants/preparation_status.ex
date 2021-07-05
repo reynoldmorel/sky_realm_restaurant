@@ -1,5 +1,10 @@
 defmodule SkyRealmRestaurant.Constants.PreparationStatus do
-  @values ["ready", "preparing", "completed", "canceled"]
+  @values [
+    "preparation_status_ready",
+    "preparation_status_preparing",
+    "preparation_status_completed",
+    "preparation_status_canceled"
+  ]
 
   def get_values, do: @values
 
