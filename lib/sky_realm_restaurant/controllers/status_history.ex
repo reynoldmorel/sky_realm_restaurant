@@ -18,6 +18,9 @@ defmodule SkyRealmRestaurant.Controllers.StatusHistoryController do
 
   def find_all_enabled(), do: StatusHistoryService.find_all_enabled()
 
+  def find_last_by_parent_id_and_model_type_enabled(parent_id, model_type),
+    do: StatusHistoryService.find_last_by_parent_id_and_model_type_enabled(parent_id, model_type)
+
   def create(new_status_history = %StatusHistory{}),
     do: StatusHistoryService.create(new_status_history)
 

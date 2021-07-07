@@ -18,6 +18,7 @@ defmodule SkyRealmRestaurant do
   alias SkyRealmRestaurant.Core.Queue
 
   alias SkyRealmRestaurant.Constants.PreparationStatus
+  alias SkyRealmRestaurant.Constants.CookingStep
 
   @moduledoc """
   Documentation for `SkyRealmRestaurant`.
@@ -61,37 +62,23 @@ defmodule SkyRealmRestaurant do
   def run_simulator do
     queue_capacity = 100_000
 
-    ready_preparaion_status = PreparationStatus.ready()
+    kitchen_simulator_queues =
+      CookingStep.get_values()
+      |> Enum.reduce(%{}, fn cooking_step, acc_map ->
+        Map.put(acc_map, cooking_step.name, %Queue{
+          capacity: queue_capacity,
+          name: cooking_step.name
+        })
+      end)
 
     kitchen_simulator_queues =
-      Map.put(%{}, ready_preparaion_status, %Queue{
-        capacity: queue_capacity,
-        name: ready_preparaion_status
-      })
-
-    preparing_preparaion_status = PreparationStatus.preparing()
-
-    kitchen_simulator_queues =
-      Map.put(kitchen_simulator_queues, preparing_preparaion_status, %Queue{
-        capacity: queue_capacity,
-        name: preparing_preparaion_status
-      })
-
-    completed_preparaion_status = PreparationStatus.completed()
-
-    kitchen_simulator_queues =
-      Map.put(kitchen_simulator_queues, completed_preparaion_status, %Queue{
-        capacity: queue_capacity,
-        name: completed_preparaion_status
-      })
-
-    canceled_preparaion_status = PreparationStatus.canceled()
-
-    kitchen_simulator_queues =
-      Map.put(kitchen_simulator_queues, canceled_preparaion_status, %Queue{
-        capacity: queue_capacity,
-        name: canceled_preparaion_status
-      })
+      PreparationStatus.get_values()
+      |> Enum.reduce(kitchen_simulator_queues, fn preparaion_status, acc_map ->
+        Map.put(acc_map, preparaion_status, %Queue{
+          capacity: queue_capacity,
+          name: preparaion_status
+        })
+      end)
 
     Server.start_link(%{
       simulators: [KitchenSimulator],

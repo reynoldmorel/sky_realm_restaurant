@@ -1,5 +1,5 @@
 defmodule SkyRealmRestaurant.Constants.ChefWorkingStatus do
-  @values ["idle", "busy"]
+  @values ["chef_working_status_idle", "chef_working_status_busy"]
 
   def get_values, do: @values
 

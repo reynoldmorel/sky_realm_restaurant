@@ -15,6 +15,8 @@ defmodule SkyRealmRestaurant.Controllers.OrderDetailController do
 
   def find_all_ready_to_work_enabled(), do: OrderDetailService.find_all_ready_to_work_enabled()
 
+  def find_all_to_prepare_enabled(), do: OrderDetailService.find_all_to_prepare_enabled()
+
   def create(new_order_detail = %OrderDetail{}), do: OrderDetailService.create(new_order_detail)
 
   def update(id, updated_order_detail = %OrderDetail{}),

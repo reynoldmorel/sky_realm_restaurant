@@ -48,6 +48,29 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService do
      end)}
   end
 
+  def find_last_by_parent_id_and_model_type_enabled(parent_id, model_type) do
+    {:ok, current_status_histories} = read_status_histories_file()
+
+    sorted_status_histories =
+      current_status_histories
+      |> Enum.filter(fn %StatusHistory{
+                          parent_id: status_history_parent_id,
+                          model_type: status_history_model_type,
+                          status: status
+                        } ->
+        status_history_parent_id == parent_id and status_history_model_type == model_type and
+          status == Status.enable()
+      end)
+      |> Enum.sort(fn a = %StatusHistory{}, b = %StatusHistory{} ->
+        a.to_time >= b.to_time
+      end)
+
+    case sorted_status_histories do
+      [last_status_history | _] -> {:ok, last_status_history}
+      [] -> {:ok, nil}
+    end
+  end
+
   def find_all_enabled() do
     {:ok, current_status_histories} = read_status_histories_file()
 

@@ -36,7 +36,7 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
   alias SkyRealmRestaurant.Entities.FinalProductProduct
 
   alias SkyRealmRestaurant.Constants.MeasureUnit
-  alias SkyRealmRestaurant.Constants.CookingStatus
+  alias SkyRealmRestaurant.Constants.CookingStep
 
   def run do
     create_ceo()
@@ -236,7 +236,7 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
       price: 350,
       supported_measure_units: [MeasureUnit.unit()],
       difficulty_level: 5,
-      cooking_steps: CookingStatus.get_cooking_steps(2)
+      cooking_steps: CookingStep.get_cooking_steps(2)
     }
 
     FinalProductController.create(final_product_hamburger)
@@ -248,7 +248,7 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
       price: 350,
       supported_measure_units: [MeasureUnit.unit()],
       difficulty_level: 3,
-      cooking_steps: CookingStatus.get_cooking_steps(3)
+      cooking_steps: CookingStep.get_cooking_steps(3)
     }
 
     FinalProductController.create(final_product_jam_sandwich)
@@ -260,7 +260,7 @@ defmodule SkyRealmRestaurant.Seed.InitialData do
       price: 50,
       supported_measure_units: [MeasureUnit.unit()],
       difficulty_level: 1,
-      cooking_steps: CookingStatus.get_cooking_steps(5)
+      cooking_steps: CookingStep.get_cooking_steps(5)
     }
 
     FinalProductController.create(final_product_lemon_juice)
