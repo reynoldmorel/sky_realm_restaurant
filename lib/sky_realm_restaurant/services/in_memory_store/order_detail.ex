@@ -92,6 +92,22 @@ defmodule SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService do
      end)}
   end
 
+  def find_to_prepare_by_id_enabled(id) do
+    {:ok, current_order_details} = read_order_details_file()
+
+    {:ok,
+     current_order_details
+     |> Enum.find(fn %OrderDetail{
+                       id: order_detail_id,
+                       preparation_status: order_detail_preparation_status,
+                       cooking_step: order_detail_cooking_step,
+                       status: status
+                     } ->
+       order_detail_id == id and order_detail_preparation_status == PreparationStatus.preparing() and
+         order_detail_cooking_step == nil and status == Status.enable()
+     end)}
+  end
+
   defp create_order_detail_product(_order_detail, nil, _measure_unit, _inventory),
     do: raise("Product can not be nil")
 

@@ -1,14 +1,19 @@
 defmodule SkyRealmRestaurant.Core.Simulator.KitchenSimulator do
   alias SkyRealmRestaurant.Services.InMemoryStore.OrderDetailService
+  alias SkyRealmRestaurant.Services.InMemoryStore.StatusHistoryService
   alias SkyRealmRestaurant.Services.InMemoryStore.ChefService
 
   alias SkyRealmRestaurant.Constants.PreparationStatus
   alias SkyRealmRestaurant.Constants.CookingStep
+  alias SkyRealmRestaurant.Constants.ModelType
 
   alias SkyRealmRestaurant.Entities.OrderDetail
+  alias SkyRealmRestaurant.Entities.StatusHistory
 
   alias SkyRealmRestaurant.Utils.InventoryUtils
   alias SkyRealmRestaurant.Utils.KitchenSimulatorUtils
+
+  alias SkyRealmRestaurant.Core.Queue
 
   def process(state = %{kitchen_simulator_state: _kitchen_simulator_state}) do
     {:ok, updated_state} = process(:place_orders_ready_to_be_worked, state)
@@ -20,6 +25,8 @@ defmodule SkyRealmRestaurant.Core.Simulator.KitchenSimulator do
     {:ok, updated_state} = process(:update_order_cooking_step, updated_state)
     updated_state = Map.merge(state, updated_state)
     {:ok, updated_state} = process(:release_completed_orders, updated_state)
+    {:ok, Map.merge(state, updated_state)}
+    {:ok, updated_state} = process(:clean_up, updated_state)
     {:ok, Map.merge(state, updated_state)}
   end
 
@@ -104,10 +111,25 @@ defmodule SkyRealmRestaurant.Core.Simulator.KitchenSimulator do
       ) do
     %{queues: queues} = kitchen_simulator_state
 
-    {:ok, order_details_to_prepare} = OrderDetailService.find_all_to_prepare_enabled()
+    preparing_status = PreparationStatus.preparing()
+    preparing_queue = Map.get(queues, preparing_status)
 
-    {:ok, updated_queues} =
-      KitchenSimulatorUtils.start_cooking_step(order_details_to_prepare, queues)
+    {:ok, queue_item, updated_preparing_queue} = Queue.dequeue(preparing_queue)
+
+    updated_queues =
+      case queue_item != nil do
+        true ->
+          {:ok, order_detail_to_prepare} =
+            OrderDetailService.find_to_prepare_by_id_enabled(queue_item.order_detail_id)
+
+          {:ok, updated_queues} =
+            KitchenSimulatorUtils.start_cooking_step([order_detail_to_prepare], queues)
+
+          Map.put(updated_queues, preparing_status, updated_preparing_queue)
+
+        false ->
+          queues
+      end
 
     {:ok,
      Map.merge(state, %{
@@ -134,11 +156,70 @@ defmodule SkyRealmRestaurant.Core.Simulator.KitchenSimulator do
         :release_completed_orders,
         state = %{kitchen_simulator_state: kitchen_simulator_state}
       ) do
-    IO.puts("Release completed orders")
+    %{queues: queues} = kitchen_simulator_state
+
+    cooking_step_completed = CookingStep.completed()
+    cooking_step_completed_queue = Map.get(queues, cooking_step_completed.name)
+
+    {:ok, queue_item, updated_cooking_step_completed_queue} =
+      Queue.dequeue(cooking_step_completed_queue)
+
+    updated_queues =
+      case queue_item != nil do
+        true ->
+          completed_status = PreparationStatus.completed()
+          completed_status_queue = Map.get(queues, completed_status)
+
+          {:ok, order_detail = %OrderDetail{}} =
+            OrderDetailService.find_by_id_enabled(queue_item.order_detail_id)
+
+          {:ok, %StatusHistory{assigned_chef_id: chef_id}} =
+            StatusHistoryService.find_last_by_model_id_and_model_type_enabled(
+              queue_item.order_detail_id,
+              ModelType.order_detail()
+            )
+
+          {:ok} =
+            KitchenSimulatorUtils.update_order_detail(
+              [order_detail],
+              PreparationStatus.completed(),
+              chef_id
+            )
+
+          {:ok, updated_completed_status_queue} =
+            Queue.enqueue(queue_item, completed_status_queue)
+
+          updated_queues =
+            Map.put(queues, cooking_step_completed.name, updated_cooking_step_completed_queue)
+
+          Map.put(updated_queues, completed_status, updated_completed_status_queue)
+
+        false ->
+          queues
+      end
 
     {:ok,
      Map.merge(state, %{
-       kitchen_simulator_state: Map.merge(kitchen_simulator_state, %{testing3: 1})
+       kitchen_simulator_state: Map.merge(kitchen_simulator_state, %{queues: updated_queues})
+     })}
+  end
+
+  def process(
+        :clean_up,
+        state = %{kitchen_simulator_state: kitchen_simulator_state}
+      ) do
+    %{queues: queues} = kitchen_simulator_state
+
+    completed_status = PreparationStatus.completed()
+    completed_status_queue = Map.get(queues, completed_status)
+
+    {:ok, _queue_item, updated_completed_status_queue} = Queue.dequeue(completed_status_queue)
+
+    updated_queues = Map.put(queues, completed_status, updated_completed_status_queue)
+
+    {:ok,
+     Map.merge(state, %{
+       kitchen_simulator_state: Map.merge(kitchen_simulator_state, %{queues: updated_queues})
      })}
   end
 end
